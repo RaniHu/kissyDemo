@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>kissy</title>
+    <script src="//g.alicdn.com/kissy/k/1.4.7/seed-min.js" charset="utf-8"></script>
+</head>
+<body>
+<p class="J_wrapper">我是例子</p>
+<script>
+
+    /*seed.js是kissy的种子文件，包含最关键的模块加载器
+     kissy由三个部分组成：Seed(模块加载器)、core(dom、ajax、event、base、promise)、components
+     */
+
+
+
+    /*一、模块系统
+     kissy的模块使用kissy.add()包裹，支持commonjs风格
+     第一个参数始终为S,是KISSY变量；require加载依赖模块函数；module.exports暴露接口供外部适用
+     KISSY.add('模块名',[依赖的模块],function(require,exports,module){
+     模块回调函数，在模块加载完成之后
+     })
+     */
+    KISSY.add(function (S, require, exports, module) {
+        var $ = require('node');
+        exports.test = function () {
+            alert("hello");
+        }
+    });
+
+    //1.定义一个模块
+    KISSY.add('demo-mod', function (S, require, exports, module) {
+        var Node = require('node');
+        var $ = Node.all;
+        exports.test = function () {
+            $('body').html('commonJs');
+        }
+    });
+    //2.使用模块
+    KISSY.use('demo-mod', function (S, demo) {
+        demo.test();
+    });
+
+    KISSY.use('node', function (S, Node) {
+        /*二、node */
+        /*1.获取节点*/
+        //(1)Node.all()返回节点集合，带有length属性，此时变量$可看做jquery$
+        var $ = Node.all();
+        //(2)Node.one()取第一个元素节点
+        var $one = Node.one('#J_One');
+        // Node.one(selector) 可以等价于 Node.all(selector).item(0)
+        // Node.all(selector).item(0)返回是node包裹对象,Node.all(selector)[0]返回的是原生节点
+
+        /*2.常用选择器*/
+        //(1)id和类选择器
+        var $test = $('#J_Test');
+        var $tip = $('.J_Tip');
+
+        //(2)子孙选择器
+        var $child = $(".J_Parent .J_Child");
+        S.log($child.length);                           //2
+        var $first = $(".J_Parent > li:first-child");
+        var $two = $(".J_Parent > li:nth-child(2)");
+        var $last = $(".J_Parent > li:last-child");
+
+        //(3)相邻选择器和伪类
+        var $p = $('.J_Brother + p');
+        var $disabled = $('.J_Checkbox:disabled');
+
+        //(4)非选择器
+        var $p2 = $('p:not(.J_Brother)');
+
+        //3.获取元素的方法
+        //(1)children() 用于获取所有子元素（不包含文本) 三种方法得到结果相同
+        var $children1 = $('.J_Children').children();
+        var $children2=$('.J_Children').children('li');
+        var $children3=$('.J_Children').all('li');
+
+        //(2)获取父节点
+        var $ul = $('.J_Css').parent();
+
+        //(3)符合选择器的第一个和最后一个
+        var $first2 = $('.J_Children').first();
+        var $last2 = $('.J_Children').last(); //css 节点
+
+        //(4)符合选择器的上一个和下一个节点
+        var $prev = $('.J_Css').prev(); //html 节点
+        var $next = $('.J_Css').next(); //html 节点
+
+        /*4.节点过filter 滤*/
+        //过滤.J_Filter下的所有li标签
+        var $lis = $('.J_Filter').all('li');
+        //过滤$lis下类名为css的元素
+        var $css = $lis.filter('.css');
+        //过滤text为html的节点
+        var $html = $lis.filter(function(item){
+            if($(item).text() === 'html'){
+                return true;
+            }
+        });
+
+
+    });
+
+
+    //使用node模块操作DOM
+    KISSY.use('node', function (S, Node) {
+        //使用all方法可以获取全部指定选择器节点
+        var $ = Node.all;
+        $(".J_wrapper").html('hello kissy!');
+    });
+
+
+</script>
+</body>
+</html>
